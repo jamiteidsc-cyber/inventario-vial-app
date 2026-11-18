@@ -1,13 +1,12 @@
 /**
- * INVENTARIO VIAL VEIDCON
+ * INVENTARIO VIAL VEIDCON (PWA Campo - 100% Celular)
  * Desarrollado por: MSc. Ing. Mohammed Veramendy
  *
  * REQUISITO DE INSTALACIÓN NPM:
  *   npm install @supabase/supabase-js
  *
- * NOTA: Las librerías SheetJS (xlsx) y jsPDF + jsPDF-AutoTable se cargan
- * dinámicamente desde CDN bajo demanda al momento de exportar Excel o PDF,
- * evitando errores de compilación y manteniendo la app ligera en campo.
+ * NOTA: SheetJS (xlsx) y jsPDF + jsPDF-AutoTable se cargan dinámicamente
+ * desde CDN al momento de exportar Excel o PDF.
  */
 
 import React, { useState, useEffect, useMemo, useCallback } from "react";
@@ -87,7 +86,7 @@ const WGS84 = {
   k0: 0.9996,
   e2: 0.0066943799901413165,
   ep2: 0.006739496742276434,
-  lon0Rad: (-63 * Math.PI) / 180, // Meridiano central Zona 20S (-63°)
+  lon0Rad: (-63 * Math.PI) / 180,
   falseEasting: 500000.0,
   falseNorthingSouth: 10000000.0,
 };
@@ -309,8 +308,7 @@ const createEmptyForm = (elemento = "Alcantarilla") => ({
   estado: "Bueno",
   detalleOtros: "",
   observaciones: "",
-  // Galerías de hasta 3 fotografías por ubicación
-  fotosInicio: [null, null, null], // { dataUrl, name }
+  fotosInicio: [null, null, null],
   fotosFin: [null, null, null],
 });
 
@@ -358,7 +356,6 @@ function dataUrlToBlob(dataUrl) {
   return new Blob([u8arr], { type: mime });
 }
 
-// Convierte URL pública o DataURL a Base64 JPEG optimizado para incrustar en jsPDF
 async function imageToPdfBase64(src) {
   if (!src) return null;
   if (src.startsWith("data:image/")) return src;
@@ -624,7 +621,7 @@ function buildCSV(records) {
 }
 
 // ============================================================================
-// 6. ESTILOS CSS EMBEBIDOS (ALTO CONTRASTE SOLAR Y DISEÑO PROFESIONAL)
+// 6. ESTILOS CSS EMBEBIDOS (HEADER ULTRACOMPACTO <= 54PX + SIDEBAR DRAWER)
 // ============================================================================
 const APP_STYLES = `
   :root {
@@ -639,7 +636,6 @@ const APP_STYLES = `
     --vial-green-100: #d1fae5;
     --vial-red-600: #dc2626;
     --vial-red-100: #fee2e2;
-    --vial-blue-600: #2563eb;
     --vial-slate-50: #f1f5f9;
     --vial-slate-100: #e2e8f0;
     --vial-slate-200: #cbd5e1;
@@ -672,171 +668,331 @@ const APP_STYLES = `
   }
 
   /* =====================================================================
-     ENCABEZADO PRINCIPAL — CONTRASTE PURO #FFFFFF SOBRE #0F172A / #1E3A5F
+     BARRA SUPERIOR ULTRACOMPACTA (1 SOLA LÍNEA, MÁXIMO 54PX DE ALTO)
      ===================================================================== */
   .app-header {
-    background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%);
+    background: linear-gradient(90deg, #0f172a 0%, #1e3a5f 100%);
     color: #ffffff;
-    padding: 18px 20px;
-    border-bottom: 4px solid #f59e0b;
-    box-shadow: var(--shadow-md);
+    height: 52px;
+    max-height: 54px;
+    padding: 0 12px;
+    border-bottom: 3px solid #f59e0b;
+    box-shadow: 0 2px 10px rgba(15, 23, 42, 0.25);
     position: sticky;
     top: 0;
     z-index: 40;
+    display: flex;
+    align-items: center;
   }
 
   .header-inner {
     max-width: 1380px;
+    width: 100%;
     margin: 0 auto;
     display: flex;
+    align-items: center;
     justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 16px;
+    gap: 10px;
+    flex-wrap: nowrap;
   }
 
-  .brand-box {
+  .header-left {
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 8px;
+    min-width: 0;
     flex: 1;
-    min-width: 280px;
   }
 
-  .brand-badge {
-    width: 52px;
-    height: 52px;
-    border-radius: 12px;
-    background: #f59e0b;
-    color: #0f172a;
-    display: flex;
+  .hamburger-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
+    border: 1.5px solid rgba(245, 158, 11, 0.75);
+    background: rgba(245, 158, 11, 0.14);
+    color: #f59e0b;
+    font-size: 1.3rem;
+    font-weight: 900;
+    line-height: 1;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-size: 26px;
-    font-weight: 900;
+    cursor: pointer;
     flex-shrink: 0;
-    box-shadow: 0 4px 14px rgba(245, 158, 11, 0.45);
+    padding: 0;
+  }
+  .hamburger-btn:hover {
+    background: #f59e0b;
+    color: #0f172a;
+  }
+
+  .brand-inline {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    min-width: 0;
+    flex: 1;
+  }
+
+  .brand-icon-sm {
+    font-size: 1.15rem;
+    line-height: 1;
+    flex-shrink: 0;
   }
 
   .brand-title {
     margin: 0;
     color: #ffffff;
-    font-size: 1.42rem;
+    font-size: clamp(0.95rem, 3.7vw, 1.18rem);
     font-weight: 900;
     letter-spacing: -0.01em;
-    line-height: 1.15;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
-  .brand-sub {
-    margin: 4px 0 0;
-    color: #ffffff;
-    font-size: 0.84rem;
-    font-weight: 500;
-    line-height: 1.35;
-  }
-
-  .brand-credit-row {
-    margin-top: 6px;
-    display: flex;
+  .conn-badge {
+    display: inline-flex;
     align-items: center;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-
-  .credit-pill {
-    background: rgba(245, 158, 11, 0.18);
-    border: 1.5px solid #f59e0b;
-    color: #f59e0b;
-    padding: 3px 10px;
-    border-radius: 999px;
-    font-size: 0.78rem;
-    font-weight: 800;
-  }
-
-  .status-pill {
-    padding: 3px 10px;
+    gap: 6px;
+    padding: 4px 10px;
     border-radius: 999px;
     font-size: 0.75rem;
     font-weight: 800;
-  }
-  .status-pill.online {
-    background: rgba(16, 185, 129, 0.22);
-    border: 1px solid #10b981;
+    white-space: nowrap;
+    flex-shrink: 0;
     color: #ffffff;
-  }
-  .status-pill.offline {
-    background: rgba(220, 38, 38, 0.35);
-    border: 1px solid #f87171;
-    color: #ffffff;
+    background: rgba(15, 23, 42, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.24);
   }
 
-  /* INTERRUPTOR MODO DE TRABAJO */
-  .mode-switch-wrapper {
-    background: rgba(15, 23, 42, 0.85);
-    border: 2px solid rgba(255, 255, 255, 0.28);
-    border-radius: 12px;
-    padding: 7px;
+  .conn-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .conn-dot.online {
+    background: #10b981;
+    box-shadow: 0 0 6px #10b981;
+  }
+  .conn-dot.offline {
+    background: #f59e0b;
+    box-shadow: 0 0 6px #f59e0b;
+  }
+
+  /* =====================================================================
+     PANEL LATERAL DESPLEGABLE (SIDEBAR DRAWER #0F172A + OVERLAY)
+     ===================================================================== */
+  .drawer-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.68);
+    backdrop-filter: blur(2px);
+    z-index: 80;
+    animation: fadeIn 0.18s ease;
+  }
+
+  .sidebar-drawer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: min(88vw, 350px);
+    background: #0f172a;
+    color: #ffffff;
+    z-index: 85;
     display: flex;
     flex-direction: column;
-    gap: 6px;
-    min-width: 310px;
+    border-right: 3px solid #f59e0b;
+    box-shadow: 10px 0 36px rgba(0, 0, 0, 0.45);
+    overflow-y: auto;
+    animation: slideRight 0.2s ease;
   }
 
-  .mode-switch-label {
+  @keyframes slideRight {
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .drawer-header {
+    padding: 16px;
+    background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 100%);
+    border-bottom: 2px solid #f59e0b;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .drawer-title {
+    margin: 0;
+    color: #ffffff;
+    font-size: 1.15rem;
+    font-weight: 900;
+  }
+
+  .drawer-subtitle {
+    margin: 5px 0 0;
+    color: #e2e8f0;
+    font-size: 0.76rem;
+    line-height: 1.38;
+  }
+
+  .drawer-credit {
+    margin-top: 8px;
+    display: inline-block;
+    background: rgba(245, 158, 11, 0.18);
+    border: 1px solid #f59e0b;
+    color: #f59e0b;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 0.76rem;
+    font-weight: 800;
+  }
+
+  .drawer-close-btn {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    background: rgba(255, 255, 255, 0.08);
+    color: #ffffff;
+    font-size: 1.15rem;
+    font-weight: 800;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .drawer-close-btn:hover {
+    background: #f59e0b;
+    color: #0f172a;
+  }
+
+  .drawer-body {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .drawer-section-title {
     font-size: 0.72rem;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.08em;
     color: #f59e0b;
-    text-align: center;
+    margin: 0 0 8px;
   }
 
-  .mode-switch-buttons {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 6px;
+  .drawer-actions-col {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
   }
 
-  .mode-btn {
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 8px;
-    padding: 10px 12px;
+  .drawer-btn {
+    width: 100%;
+    min-height: 44px;
+    padding: 10px 14px;
+    border-radius: 9px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: #1e3a5f;
+    color: #ffffff;
     font-size: 0.88rem;
     font-weight: 800;
     cursor: pointer;
-    background: rgba(255, 255, 255, 0.08);
-    color: #ffffff;
-    min-height: 44px;
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 6px;
-    transition: all 0.16s ease;
+    justify-content: flex-start;
+    gap: 10px;
+    font-family: inherit;
+    text-align: left;
+    transition: all 0.15s ease;
+  }
+  .drawer-btn:hover:not(:disabled) {
+    background: #274b7a;
+    border-color: #f59e0b;
+  }
+  .drawer-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
   }
 
-  .mode-btn.active-mobile {
+  .drawer-btn-sync {
     background: #f59e0b;
     color: #0f172a;
     border-color: #f59e0b;
-    box-shadow: 0 2px 12px rgba(245, 158, 11, 0.5);
+    justify-content: center;
+  }
+  .drawer-btn-sync:hover:not(:disabled) {
+    background: #d97706;
+    color: #ffffff;
   }
 
-  .mode-btn.active-pc {
-    background: #ffffff;
-    color: #0f172a;
-    border-color: #ffffff;
-    box-shadow: 0 2px 12px rgba(255, 255, 255, 0.35);
+  .drawer-stats-box {
+    background: rgba(30, 58, 95, 0.45);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 10px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .drawer-stat-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: #ffffff;
+  }
+
+  .drawer-stat-grid {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 6px 10px;
+    font-size: 0.8rem;
+    color: #e2e8f0;
+  }
+
+  .drawer-stat-count {
+    font-weight: 800;
+    color: #f59e0b;
+    text-align: right;
   }
 
   /* MAIN */
   .main-container {
     max-width: 1380px;
     width: 100%;
-    margin: 20px auto 36px;
-    padding: 0 16px;
+    margin: 14px auto 34px;
+    padding: 0 12px;
     display: flex;
     flex-direction: column;
-    gap: 22px;
+    gap: 18px;
+  }
+
+  @media (min-width: 640px) {
+    .main-container {
+      padding: 0 18px;
+      margin-top: 18px;
+    }
   }
 
   /* BANNER DE SINCRONIZACIÓN PENDIENTE */
@@ -844,12 +1000,12 @@ const APP_STYLES = `
     background: #fef3c7;
     border: 2px solid #f59e0b;
     border-radius: var(--radius-md);
-    padding: 14px 18px;
+    padding: 12px 16px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
-    gap: 12px;
+    gap: 10px;
     color: #78350f;
     box-shadow: var(--shadow-sm);
   }
@@ -863,23 +1019,22 @@ const APP_STYLES = `
     overflow: hidden;
   }
 
-  /* ENCABEZADOS DE SECCIÓN OSCUROS: TEXTO BLANCO PURO #FFFFFF */
   .card-header {
     background: linear-gradient(90deg, #0f172a 0%, #1e3a5f 100%);
     color: #ffffff;
-    padding: 14px 20px;
+    padding: 12px 16px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 8px;
     border-bottom: 3px solid #f59e0b;
   }
 
   .card-header h2 {
     margin: 0;
     color: #ffffff;
-    font-size: 1.08rem;
+    font-size: 1.02rem;
     font-weight: 800;
     display: flex;
     align-items: center;
@@ -890,14 +1045,20 @@ const APP_STYLES = `
     background: rgba(245, 158, 11, 0.2);
     border: 1.5px solid #f59e0b;
     color: #ffffff;
-    padding: 4px 12px;
+    padding: 3px 10px;
     border-radius: 999px;
-    font-size: 0.78rem;
+    font-size: 0.74rem;
     font-weight: 800;
   }
 
   .card-body {
-    padding: 20px;
+    padding: 16px;
+  }
+
+  @media (min-width: 640px) {
+    .card-body {
+      padding: 20px;
+    }
   }
 
   /* SELECTOR PRINCIPAL ELEMENTO */
@@ -905,11 +1066,11 @@ const APP_STYLES = `
     background: var(--vial-slate-50);
     border: 2px solid var(--vial-dark-800);
     border-radius: var(--radius-md);
-    padding: 14px;
-    margin-bottom: 18px;
+    padding: 12px;
+    margin-bottom: 16px;
     display: grid;
     grid-template-columns: 1fr;
-    gap: 12px;
+    gap: 10px;
   }
 
   @media (min-width: 680px) {
@@ -965,7 +1126,7 @@ const APP_STYLES = `
     width: 100%;
     min-height: 44px;
     padding: 9px 12px;
-    font-size: 0.94rem;
+    font-size: 0.95rem;
     border: 1.5px solid var(--vial-slate-200);
     border-radius: 8px;
     background: var(--vial-white);
@@ -975,7 +1136,7 @@ const APP_STYLES = `
   }
 
   .textarea {
-    min-height: 84px;
+    min-height: 82px;
     resize: vertical;
   }
 
@@ -1031,7 +1192,6 @@ const APP_STYLES = `
     font-size: 0.88rem;
     font-weight: 800;
     color: #ffffff;
-    letter-spacing: 0.02em;
   }
 
   .location-block-body {
@@ -1041,19 +1201,38 @@ const APP_STYLES = `
     gap: 12px;
   }
 
+  .btn-gps-big {
+    width: 100%;
+    min-height: 48px;
+    font-size: 0.96rem;
+    font-weight: 900;
+    background: var(--vial-green-600);
+    color: #ffffff;
+    border: none;
+    border-radius: 9px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 3px 10px rgba(5, 150, 105, 0.34);
+    font-family: inherit;
+  }
+  .btn-gps-big:hover:not(:disabled) {
+    background: #047857;
+  }
+  .btn-gps-big:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+  }
+
   .utm-pair {
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
     gap: 10px;
   }
 
-  @media (min-width: 480px) {
-    .utm-pair {
-      grid-template-columns: 1fr 1fr;
-    }
-  }
-
-  /* GALERÍA 3 SLOTS DE FOTOGRAFÍA */
+  /* GALERÍA 3 SLOTS CON CÁMARA + GALERÍA */
   .photo-gallery-title {
     font-size: 0.8rem;
     font-weight: 800;
@@ -1074,38 +1253,71 @@ const APP_STYLES = `
     border: 2px dashed var(--vial-slate-200);
     border-radius: 8px;
     background: #ffffff;
-    min-height: 112px;
+    min-height: 114px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     padding: 6px;
-    position: relative;
     text-align: center;
-    transition: border-color 0.15s ease;
   }
 
-  .photo-slot:hover {
-    border-color: var(--vial-dark-800);
-  }
-
-  .photo-slot-label {
-    cursor: pointer;
+  .slot-empty-actions {
     width: 100%;
-    height: 100%;
     display: flex;
     flex-direction: column;
+    gap: 5px;
+  }
+
+  .slot-header-num {
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: var(--vial-slate-500);
+  }
+
+  .slot-btn-cam {
+    width: 100%;
+    min-height: 36px;
+    border-radius: 6px;
+    background: #1e3a5f;
+    color: #ffffff;
+    font-size: 0.74rem;
+    font-weight: 800;
+    display: flex;
     align-items: center;
     justify-content: center;
     gap: 4px;
-    color: var(--vial-dark-800);
-    font-size: 0.74rem;
+    cursor: pointer;
+    padding: 4px;
+  }
+  .slot-btn-cam:hover {
+    background: #0f172a;
+  }
+
+  .slot-btn-gal {
+    width: 100%;
+    min-height: 32px;
+    border-radius: 6px;
+    background: var(--vial-slate-100);
+    color: #0f172a;
+    border: 1px solid var(--vial-slate-200);
+    font-size: 0.72rem;
     font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    cursor: pointer;
+    padding: 3px;
+  }
+  .slot-btn-gal:hover {
+    background: var(--vial-amber-100);
+    border-color: #f59e0b;
   }
 
   .photo-slot-img {
     width: 100%;
-    height: 76px;
+    height: 78px;
     object-fit: cover;
     border-radius: 6px;
     cursor: pointer;
@@ -1142,7 +1354,7 @@ const APP_STYLES = `
     color: #ffffff;
   }
 
-  /* BOTONES */
+  /* BOTONES GENERALES */
   .btn {
     border: none;
     border-radius: 8px;
@@ -1158,27 +1370,15 @@ const APP_STYLES = `
     font-family: inherit;
     transition: all 0.16s ease;
   }
-
   .btn:disabled {
     opacity: 0.6;
     cursor: not-allowed;
   }
-
   .btn-sm {
     min-height: 36px;
     padding: 6px 12px;
     font-size: 0.8rem;
   }
-
-  .btn-gps {
-    background: var(--vial-green-600);
-    color: #ffffff;
-    box-shadow: 0 2px 8px rgba(5, 150, 105, 0.35);
-  }
-  .btn-gps:hover:not(:disabled) {
-    background: #047857;
-  }
-
   .btn-amber {
     background: #f59e0b;
     color: #0f172a;
@@ -1187,7 +1387,6 @@ const APP_STYLES = `
     background: #d97706;
     color: #ffffff;
   }
-
   .btn-primary {
     background: #1e3a5f;
     color: #ffffff;
@@ -1195,7 +1394,6 @@ const APP_STYLES = `
   .btn-primary:hover:not(:disabled) {
     background: #0f172a;
   }
-
   .btn-outline {
     background: #ffffff;
     color: #0f172a;
@@ -1205,7 +1403,6 @@ const APP_STYLES = `
     border-color: #1e3a5f;
     background: var(--vial-slate-50);
   }
-
   .btn-danger-sm {
     background: var(--vial-red-100);
     color: var(--vial-red-600);
@@ -1218,22 +1415,20 @@ const APP_STYLES = `
     color: #ffffff;
   }
 
-  /* BARRA DE EXPORTACIÓN PROFESIONAL (4 BOTONES) */
+  /* BARRA DE EXPORTACIÓN */
   .export-bar {
     display: grid;
     grid-template-columns: 1fr;
     gap: 10px;
-    padding: 16px 20px;
+    padding: 14px 16px;
     background: #f8fafc;
     border-bottom: 1.5px solid var(--vial-slate-200);
   }
-
   @media (min-width: 640px) {
     .export-bar {
       grid-template-columns: repeat(2, 1fr);
     }
   }
-
   @media (min-width: 1080px) {
     .export-bar {
       grid-template-columns: repeat(4, 1fr);
@@ -1244,42 +1439,26 @@ const APP_STYLES = `
     background: #059669;
     color: #ffffff;
   }
-  .btn-exp-qgis:hover:not(:disabled) {
-    background: #047857;
-  }
-
   .btn-exp-excel {
     background: #15803d;
     color: #ffffff;
   }
-  .btn-exp-excel:hover:not(:disabled) {
-    background: #166534;
-  }
-
   .btn-exp-pdf {
     background: #b91c1c;
     color: #ffffff;
   }
-  .btn-exp-pdf:hover:not(:disabled) {
-    background: #991b1b;
-  }
-
   .btn-exp-csv {
     background: #1e3a5f;
     color: #ffffff;
   }
-  .btn-exp-csv:hover:not(:disabled) {
-    background: #0f172a;
-  }
 
-  /* CHIPS RÁPIDOS DE SECCIÓN */
+  /* CHIPS RÁPIDOS */
   .quick-chips {
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
     margin-top: 4px;
   }
-
   .chip-btn {
     background: var(--vial-slate-100);
     color: var(--vial-dark-950);
@@ -1292,10 +1471,9 @@ const APP_STYLES = `
   }
   .chip-btn:hover {
     background: var(--vial-amber-100);
-    border-color: var(--vial-amber-500);
+    border-color: #f59e0b;
   }
 
-  /* FORM ACTIONS */
   .form-actions {
     margin-top: 18px;
     padding-top: 16px;
@@ -1306,9 +1484,9 @@ const APP_STYLES = `
     gap: 10px;
   }
 
-  /* FILTROS DE TABLA */
+  /* FILTROS Y TABLA EN VIVO */
   .records-toolbar {
-    padding: 14px 20px;
+    padding: 14px 16px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -1317,36 +1495,37 @@ const APP_STYLES = `
     border-bottom: 1px solid var(--vial-slate-200);
     background: #ffffff;
   }
-
   .filters-row {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 8px;
     align-items: center;
+    width: 100%;
   }
-
+  @media (min-width: 768px) {
+    .filters-row {
+      width: auto;
+    }
+  }
   .filters-row .select,
   .filters-row .input {
-    width: auto;
-    min-width: 175px;
+    flex: 1;
+    min-width: 150px;
     min-height: 38px;
     padding: 6px 10px;
     font-size: 0.85rem;
   }
 
-  /* TABLA EN VIVO */
   .table-responsive {
     width: 100%;
     overflow-x: auto;
   }
-
   .data-table {
     width: 100%;
     border-collapse: collapse;
     font-size: 0.83rem;
-    min-width: 1080px;
+    min-width: 1060px;
   }
-
   .data-table th {
     background: #0f172a;
     color: #ffffff;
@@ -1356,13 +1535,11 @@ const APP_STYLES = `
     white-space: nowrap;
     border-bottom: 2px solid #f59e0b;
   }
-
   .data-table td {
     padding: 10px 12px;
     border-bottom: 1px solid var(--vial-slate-200);
     vertical-align: top;
   }
-
   .data-table tr:hover td {
     background: #f8fafc;
   }
@@ -1378,19 +1555,12 @@ const APP_STYLES = `
     color: #0f172a;
   }
 
-  .table-thumbs-group {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-
   .table-thumbs-row {
     display: flex;
     align-items: center;
     gap: 4px;
     flex-wrap: wrap;
   }
-
   .thumb-mini {
     width: 44px;
     height: 36px;
@@ -1400,7 +1570,6 @@ const APP_STYLES = `
     cursor: pointer;
   }
 
-  /* BADGES */
   .badge {
     display: inline-flex;
     align-items: center;
@@ -1437,9 +1606,7 @@ const APP_STYLES = `
     border: 1px solid #f59e0b;
   }
 
-  /* GPS FEEDBACK */
   .gps-banner {
-    grid-column: 1 / -1;
     padding: 10px 14px;
     border-radius: 8px;
     font-size: 0.84rem;
@@ -1456,7 +1623,6 @@ const APP_STYLES = `
     border: 1px solid #ef4444;
   }
 
-  /* MODAL FOTO */
   .modal-backdrop {
     position: fixed;
     inset: 0;
@@ -1467,7 +1633,6 @@ const APP_STYLES = `
     justify-content: center;
     padding: 16px;
   }
-
   .modal-card {
     background: #ffffff;
     border-radius: var(--radius-lg);
@@ -1476,7 +1641,6 @@ const APP_STYLES = `
     overflow: hidden;
     box-shadow: 0 24px 55px rgba(0, 0, 0, 0.4);
   }
-
   .modal-header {
     background: #0f172a;
     color: #ffffff;
@@ -1486,13 +1650,11 @@ const APP_STYLES = `
     align-items: center;
     border-bottom: 3px solid #f59e0b;
   }
-
   .modal-header h3 {
     margin: 0;
     color: #ffffff;
     font-size: 1rem;
   }
-
   .modal-close {
     background: transparent;
     border: none;
@@ -1502,13 +1664,15 @@ const APP_STYLES = `
     line-height: 1;
   }
 
-  /* TOAST */
   .toast {
     position: fixed;
     bottom: 20px;
-    right: 20px;
+    right: 16px;
+    left: 16px;
+    max-width: 420px;
+    margin-left: auto;
     z-index: 100;
-    padding: 12px 18px;
+    padding: 12px 16px;
     border-radius: 10px;
     color: #ffffff;
     font-weight: 800;
@@ -1525,23 +1689,21 @@ const APP_STYLES = `
     background: #1e3a5f;
   }
 
-  /* FOOTER */
   .app-footer {
     margin-top: auto;
     background: #0f172a;
     color: #ffffff;
     text-align: center;
-    padding: 16px 20px;
-    font-size: 0.84rem;
+    padding: 14px 16px;
+    font-size: 0.82rem;
     border-top: 3px solid #f59e0b;
   }
-
   .app-footer strong {
     color: #f59e0b;
   }
 
   .empty-state {
-    padding: 40px 20px;
+    padding: 36px 20px;
     text-align: center;
     color: var(--vial-slate-500);
   }
@@ -1551,10 +1713,7 @@ const APP_STYLES = `
 // 7. COMPONENTE PRINCIPAL: INVENTARIO VIAL VEIDCON
 // ============================================================================
 export default function App() {
-  const [workMode, setWorkMode] = useState(() =>
-    typeof window !== "undefined" && window.innerWidth < 768 ? "mobile" : "pc"
-  );
-
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const [isOnline, setIsOnline] = useState(() =>
     typeof navigator !== "undefined" ? navigator.onLine : true
   );
@@ -1600,12 +1759,21 @@ export default function App() {
     }, 4000);
   }, []);
 
-  // Persistencia de cola offline y caché
+  // Cerrar panel lateral con tecla Escape
+  useEffect(() => {
+    const onKeyDown = (e) => {
+      if (e.key === "Escape") setDrawerOpen(false);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
+
+  // Persistencia local de cola pendiente y caché
   useEffect(() => {
     try {
       localStorage.setItem(PENDING_STORAGE_KEY, JSON.stringify(pendingRecords));
     } catch {
-      // Silencio si cuota local excedida
+      // Cuota local llena
     }
   }, [pendingRecords]);
 
@@ -1613,11 +1781,11 @@ export default function App() {
     try {
       localStorage.setItem(CACHE_STORAGE_KEY, JSON.stringify(cloudRecords));
     } catch {
-      // Silencio si cuota local excedida
+      // Cuota local llena
     }
   }, [cloudRecords]);
 
-  // Cargar registros en vivo desde Supabase
+  // Cargar registros desde Supabase
   const fetchCloudRecords = useCallback(async () => {
     setLoadingRecords(true);
     try {
@@ -1628,8 +1796,10 @@ export default function App() {
 
       if (error) throw error;
       setCloudRecords(data || []);
+      return true;
     } catch (err) {
-      console.warn("No se pudo actualizar desde Supabase:", err.message);
+      console.warn("No se pudo consultar Supabase:", err.message);
+      return false;
     } finally {
       setLoadingRecords(false);
     }
@@ -1639,16 +1809,16 @@ export default function App() {
     fetchCloudRecords();
   }, [fetchCloudRecords]);
 
-  // Monitorear conectividad online / offline
+  // Monitoreo de conexión online/offline
   useEffect(() => {
     const onOnline = () => {
       setIsOnline(true);
       fetchCloudRecords();
-      showToast("info", "Conexión restablecida.");
+      showToast("info", "Conexión a internet restablecida.");
     };
     const onOffline = () => {
       setIsOnline(false);
-      showToast("error", "Sin internet: los registros se guardarán localmente.");
+      showToast("error", "Sin conexión: los registros se guardarán localmente.");
     };
     window.addEventListener("online", onOnline);
     window.addEventListener("offline", onOffline);
@@ -1658,7 +1828,7 @@ export default function App() {
     };
   }, [fetchCloudRecords, showToast]);
 
-  // Subir una fotografía al bucket fotos-viales y devolver su URL pública
+  // Subir fotografía a bucket fotos-viales
   const uploadPhotoToSupabase = async (dataUrl, tag) => {
     const blob = dataUrlToBlob(dataUrl);
     const filePath = `veidcon/${Date.now()}_${Math.random()
@@ -1681,7 +1851,6 @@ export default function App() {
     return urlData.publicUrl;
   };
 
-  // Cambio de elemento vial
   const handleElementoChange = (nuevoElemento) => {
     setFormData((prev) => ({
       ...createEmptyForm(nuevoElemento),
@@ -1694,12 +1863,12 @@ export default function App() {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  // Captura GPS en Modo Celular -> UTM WGS84 Zona 20S (2 decimales)
+  // Captura GPS en vivo -> Coordenadas UTM WGS84 Zona 20S (2 decimales)
   const handleCaptureGPS = (target) => {
     if (!navigator.geolocation) {
       setGpsStatus({
         ok: false,
-        text: "El navegador o dispositivo no soporta geolocalización GPS.",
+        text: "El navegador o teléfono no soporta geolocalización GPS.",
       });
       return;
     }
@@ -1739,7 +1908,7 @@ export default function App() {
     );
   };
 
-  // Manejo de galería de 3 fotos por ubicación
+  // Manejo de galería hasta 3 fotos (Cámara trasera o Galería del teléfono)
   const handlePhotoSlotChange = async (galleryKey, slotIndex, event) => {
     const file = event.target.files?.[0];
     event.target.value = "";
@@ -1767,7 +1936,6 @@ export default function App() {
     });
   };
 
-  // Calcular distancia horizontal automática entre Inicio y Fin
   const handleCalcLongitudUTM = () => {
     const e1 = parseFloat(formData.esteInicio);
     const n1 = parseFloat(formData.norteInicio);
@@ -1780,7 +1948,7 @@ export default function App() {
     handleFieldChange("longitud", Math.hypot(e2 - e1, n2 - n1).toFixed(2));
   };
 
-  // Guardar registro en Supabase (o en cola offline si no hay señal)
+  // Guardar elemento en Supabase o cola offline
   const handleSubmit = async (e) => {
     e.preventDefault();
     const isPunto = formData.geometria === "Punto";
@@ -1794,8 +1962,8 @@ export default function App() {
       showToast(
         "error",
         isPunto
-          ? "Debe ingresar Coordenada Este y Norte del Punto."
-          : "Debe ingresar Coordenadas UTM válidas del Punto Inicial."
+          ? "Capture o ingrese Coordenada Este y Norte del Punto."
+          : "Capture o ingrese Coordenadas UTM válidas del Punto Inicial."
       );
       return;
     }
@@ -1807,7 +1975,10 @@ export default function App() {
         Number.isNaN(Number(formData.esteFin)) ||
         Number.isNaN(Number(formData.norteFin)))
     ) {
-      showToast("error", "Debe ingresar Coordenadas UTM válidas del Punto Final.");
+      showToast(
+        "error",
+        "Capture o ingrese Coordenadas UTM válidas del Punto Final."
+      );
       return;
     }
 
@@ -1843,12 +2014,12 @@ export default function App() {
         id: `LOCAL-${Date.now()}`,
         created_at: new Date().toISOString(),
         _isPending: true,
-        foto_url: fotosInicioValidas[0]?.dataUrl || fotosFinValidas[0]?.dataUrl || null,
+        foto_url:
+          fotosInicioValidas[0]?.dataUrl || fotosFinValidas[0]?.dataUrl || null,
         atributos_extra: {
           fotos_inicio: fotosInicioValidas.map((f) => f.dataUrl),
           fotos_fin: fotosFinValidas.map((f) => f.dataUrl),
-          modo_registro:
-            workMode === "mobile" ? "Celular (Campo)" : "PC (Gabinete)",
+          modo_registro: "Celular (Campo)",
         },
       };
       setPendingRecords((prev) => [pendingItem, ...prev]);
@@ -1856,7 +2027,7 @@ export default function App() {
       setGpsStatus(null);
       showToast(
         "info",
-        "Sin señal: guardado en cola local. Use 'Sincronizar pendientes' al recuperar internet."
+        "Sin señal: guardado en cola local. Sincroniza desde el menú ☰ al tener internet."
       );
     };
 
@@ -1867,7 +2038,6 @@ export default function App() {
     }
 
     try {
-      // 1. Subir fotografías al bucket fotos-viales
       const urlsInicio = [];
       for (let i = 0; i < fotosInicioValidas.length; i++) {
         const url = await uploadPhotoToSupabase(
@@ -1892,12 +2062,10 @@ export default function App() {
         atributos_extra: {
           fotos_inicio: urlsInicio,
           fotos_fin: urlsFin,
-          modo_registro:
-            workMode === "mobile" ? "Celular (Campo)" : "PC (Gabinete)",
+          modo_registro: "Celular (Campo)",
         },
       };
 
-      // 2. Insertar en tabla public.inventario_vial
       const { data: inserted, error } = await supabase
         .from(TABLE_NAME)
         .insert([payloadToInsert])
@@ -1918,99 +2086,102 @@ export default function App() {
     }
   };
 
-  // Sincronizar registros pendientes offline con Supabase
-  const handleSyncPending = async () => {
-    if (pendingRecords.length === 0) return;
+  // Sincronización unificada (subir pendientes + recargar desde Supabase)
+  const handleSyncAndRefresh = async () => {
     if (!navigator.onLine) {
-      showToast("error", "Aún no hay conexión a internet para sincronizar.");
+      showToast("error", "Sin conexión a internet para sincronizar con Supabase.");
       return;
     }
 
     setSyncing(true);
-    const remaining = [];
     let syncedCount = 0;
+    const remaining = [];
 
-    for (const item of pendingRecords) {
-      try {
-        const extra = item.atributos_extra || {};
-        const localIni = extra.fotos_inicio || [];
-        const localFin = extra.fotos_fin || [];
+    if (pendingRecords.length > 0) {
+      for (const item of pendingRecords) {
+        try {
+          const extra = item.atributos_extra || {};
+          const localIni = extra.fotos_inicio || [];
+          const localFin = extra.fotos_fin || [];
 
-        const urlsIni = [];
-        for (let i = 0; i < localIni.length; i++) {
-          const src = localIni[i];
-          urlsIni.push(
-            src.startsWith("data:")
-              ? await uploadPhotoToSupabase(src, `sync_ini${i + 1}`)
-              : src
-          );
+          const urlsIni = [];
+          for (let i = 0; i < localIni.length; i++) {
+            const src = localIni[i];
+            urlsIni.push(
+              src.startsWith("data:")
+                ? await uploadPhotoToSupabase(src, `sync_ini${i + 1}`)
+                : src
+            );
+          }
+
+          const urlsFin = [];
+          for (let i = 0; i < localFin.length; i++) {
+            const src = localFin[i];
+            urlsFin.push(
+              src.startsWith("data:")
+                ? await uploadPhotoToSupabase(src, `sync_fin${i + 1}`)
+                : src
+            );
+          }
+
+          const insertPayload = {
+            elemento: item.elemento,
+            geometria: item.geometria,
+            este_inicio: item.este_inicio,
+            norte_inicio: item.norte_inicio,
+            este_fin: item.este_fin,
+            norte_fin: item.norte_fin,
+            progresiva_inicio: item.progresiva_inicio,
+            progresiva_fin: item.progresiva_fin,
+            nombre: item.nombre,
+            tipo: item.tipo,
+            seccion: item.seccion,
+            ancho_calzada: item.ancho_calzada,
+            altura: item.altura,
+            longitud: item.longitud,
+            num_banquinas: item.num_banquinas,
+            estado: item.estado,
+            detalle_otros: item.detalle_otros,
+            observaciones: item.observaciones,
+            foto_url: urlsIni[0] || urlsFin[0] || null,
+            atributos_extra: {
+              fotos_inicio: urlsIni,
+              fotos_fin: urlsFin,
+              modo_registro: extra.modo_registro || "Celular (Campo)",
+            },
+          };
+
+          const { error } = await supabase.from(TABLE_NAME).insert([insertPayload]);
+          if (error) throw error;
+          syncedCount++;
+        } catch (err) {
+          console.error("Fallo al sincronizar registro:", err);
+          remaining.push(item);
         }
-
-        const urlsFin = [];
-        for (let i = 0; i < localFin.length; i++) {
-          const src = localFin[i];
-          urlsFin.push(
-            src.startsWith("data:")
-              ? await uploadPhotoToSupabase(src, `sync_fin${i + 1}`)
-              : src
-          );
-        }
-
-        const insertPayload = {
-          elemento: item.elemento,
-          geometria: item.geometria,
-          este_inicio: item.este_inicio,
-          norte_inicio: item.norte_inicio,
-          este_fin: item.este_fin,
-          norte_fin: item.norte_fin,
-          progresiva_inicio: item.progresiva_inicio,
-          progresiva_fin: item.progresiva_fin,
-          nombre: item.nombre,
-          tipo: item.tipo,
-          seccion: item.seccion,
-          ancho_calzada: item.ancho_calzada,
-          altura: item.altura,
-          longitud: item.longitud,
-          num_banquinas: item.num_banquinas,
-          estado: item.estado,
-          detalle_otros: item.detalle_otros,
-          observaciones: item.observaciones,
-          foto_url: urlsIni[0] || urlsFin[0] || null,
-          atributos_extra: {
-            fotos_inicio: urlsIni,
-            fotos_fin: urlsFin,
-            modo_registro: extra.modo_registro || "Sincronizado",
-          },
-        };
-
-        const { error } = await supabase.from(TABLE_NAME).insert([insertPayload]);
-        if (error) throw error;
-        syncedCount++;
-      } catch (err) {
-        console.error("Fallo al sincronizar registro:", err);
-        remaining.push(item);
       }
+      setPendingRecords(remaining);
     }
 
-    setPendingRecords(remaining);
-    await fetchCloudRecords();
+    const ok = await fetchCloudRecords();
     setSyncing(false);
 
-    if (syncedCount > 0) {
+    if (syncedCount > 0 && remaining.length === 0) {
       showToast(
         "success",
-        `${syncedCount} registro(s) sincronizado(s) con Supabase.`
+        `${syncedCount} registro(s) sincronizado(s) y tabla actualizada.`
       );
-    }
-    if (remaining.length > 0) {
+    } else if (remaining.length > 0) {
       showToast(
         "error",
-        `${remaining.length} registro(s) no pudieron sincronizarse.`
+        `${remaining.length} registro(s) pendientes no pudieron subirse.`
       );
+    } else if (ok) {
+      showToast("success", "Datos actualizados desde Supabase.");
+    } else {
+      showToast("error", "No se pudo conectar con Supabase.");
     }
   };
 
-  // Eliminar registro (Nube o Cola Offline)
   const handleDeleteRecord = async (rec) => {
     if (!window.confirm("¿Eliminar este registro del inventario vial?")) return;
 
@@ -2033,11 +2204,29 @@ export default function App() {
     }
   };
 
-  // Lista combinada (pendientes + nube) y filtrada
   const allRecords = useMemo(
     () => [...pendingRecords, ...cloudRecords],
     [pendingRecords, cloudRecords]
   );
+
+  // Resumen estadístico rápido en vivo por elemento (para el Panel Lateral)
+  const statsSummary = useMemo(() => {
+    const byElement = {};
+    ELEMENTOS.forEach((el) => {
+      byElement[el] = 0;
+    });
+    allRecords.forEach((r) => {
+      if (byElement[r.elemento] !== undefined) {
+        byElement[r.elemento]++;
+      } else {
+        byElement[r.elemento] = 1;
+      }
+    });
+    return {
+      total: allRecords.length,
+      byElement,
+    };
+  }, [allRecords]);
 
   const filteredRecords = useMemo(() => {
     return allRecords.filter((r) => {
@@ -2064,7 +2253,7 @@ export default function App() {
   }, [allRecords, filterElement, filterEstado, searchQuery]);
 
   // =========================================================================
-  // EXPORTACIONES PROFESIONALES: QGIS, EXCEL, PDF CON FOTOS Y CSV
+  // EXPORTACIONES: QGIS, EXCEL, PDF CON FOTOS Y CSV
   // =========================================================================
   const handleExportGeoJSON = () => {
     if (filteredRecords.length === 0) {
@@ -2248,7 +2437,6 @@ export default function App() {
 
       drawHeaderBanner();
 
-      // Resumen estadístico inicial
       const total = filteredRecords.length;
       const buenos = filteredRecords.filter((r) => r.estado === "Bueno").length;
       const regulares = filteredRecords.filter((r) => r.estado === "Regular").length;
@@ -2282,7 +2470,6 @@ export default function App() {
           y = 38;
         }
 
-        // Título de Ficha Técnica
         doc.setFillColor(30, 58, 95);
         doc.rect(margin, y, contentW, 8.5, "F");
         doc.setTextColor(255, 255, 255);
@@ -2294,7 +2481,6 @@ export default function App() {
           y + 5.7
         );
 
-        // Etiqueta de Estado con color
         const badgeColor =
           rec.estado === "Bueno"
             ? [5, 150, 105]
@@ -2311,7 +2497,6 @@ export default function App() {
 
         y += 9;
 
-        // Cuadro técnico estructurado con autoTable
         const rows = [
           [
             isPunto ? "Progresiva" : "Progresiva Inicio / Fin",
@@ -2378,7 +2563,6 @@ export default function App() {
 
         y = doc.lastAutoTable.finalY + 4;
 
-        // Renderizar galería de fotos incrustadas
         const renderPhotoStrip = async (urls, labelPrefix) => {
           if (!urls || urls.length === 0) return;
           if (y > pageH - 52) {
@@ -2450,7 +2634,6 @@ export default function App() {
         y += 4;
       }
 
-      // Pie de página en todas las hojas
       const totalPages = doc.internal.getNumberOfPages();
       for (let p = 1; p <= totalPages; p++) {
         doc.setPage(p);
@@ -2476,7 +2659,7 @@ export default function App() {
   };
 
   // =========================================================================
-  // RENDERIZADO DE GALERÍA MULTIFOTO (3 SLOTS POR UBICACIÓN)
+  // GALERÍA MULTIFOTO DE CAMPO (HASTA 3 FOTOS: CÁMARA TRASERA + GALERÍA)
   // =========================================================================
   const renderPhotoGallery = (galleryKey, titlePrefix) => {
     const slots = formData[galleryKey];
@@ -2485,9 +2668,7 @@ export default function App() {
     return (
       <div>
         <div className="photo-gallery-title">
-          <span>
-            📷 {titlePrefix} (Máx. 3 fotografías)
-          </span>
+          <span>📷 {titlePrefix} (Máx. 3 fotografías)</span>
           <span className="field-hint">{count}/3 adjuntas</span>
         </div>
         <div className="photo-slots-grid">
@@ -2518,16 +2699,11 @@ export default function App() {
                   </div>
                 </>
               ) : (
-                <label className="photo-slot-label">
-                  <span style={{ fontSize: "1.25rem" }}>
-                    {workMode === "mobile" ? "📸" : "🖼️"}
-                  </span>
-                  <span>
-                    {workMode === "mobile"
-                      ? `Tomar Foto ${idx + 1}`
-                      : `Subir Foto ${idx + 1}`}
-                  </span>
-                  {workMode === "mobile" ? (
+                <div className="slot-empty-actions">
+                  <span className="slot-header-num">Foto {idx + 1}</span>
+                  {/* Botón directo a cámara trasera */}
+                  <label className="slot-btn-cam">
+                    📸 Cámara
                     <input
                       type="file"
                       accept="image/*"
@@ -2535,15 +2711,18 @@ export default function App() {
                       onChange={(e) => handlePhotoSlotChange(galleryKey, idx, e)}
                       style={{ display: "none" }}
                     />
-                  ) : (
+                  </label>
+                  {/* Opción desde galería del teléfono */}
+                  <label className="slot-btn-gal">
+                    🖼️ Galería
                     <input
                       type="file"
                       accept="image/*"
                       onChange={(e) => handlePhotoSlotChange(galleryKey, idx, e)}
                       style={{ display: "none" }}
                     />
-                  )}
-                </label>
+                  </label>
+                </div>
               )}
             </div>
           ))}
@@ -2560,96 +2739,213 @@ export default function App() {
       <style>{APP_STYLES}</style>
 
       {/* ================================================================= */}
-      {/* 1. ENCABEZADO CORPORATIVO VEIDCON — CONTRASTE BLANCO PURO #FFFFFF */}
+      {/* 1. BARRA SUPERIOR ULTRACOMPACTA (<= 54PX, 1 SOLA LÍNEA)            */}
       {/* ================================================================= */}
       <header className="app-header">
         <div className="header-inner">
-          <div className="brand-box">
-            <div className="brand-badge" aria-hidden="true">
-              🛣️
-            </div>
-            <div>
+          <div className="header-left">
+            <button
+              type="button"
+              className="hamburger-btn"
+              aria-label="Abrir menú lateral"
+              aria-expanded={drawerOpen}
+              onClick={() => setDrawerOpen(true)}
+            >
+              ☰
+            </button>
+            <div className="brand-inline">
+              <span className="brand-icon-sm" aria-hidden="true">
+                🛣️
+              </span>
               <h1 className="brand-title">Inventario Vial VEIDCON</h1>
-              <p className="brand-sub">
-                Sistema de Relevamiento Georreferenciado de Infraestructura Carretera •
-                WGS84 UTM Zona 20S (EPSG:32720)
-              </p>
-              <div className="brand-credit-row">
-                <span className="credit-pill">
-                  Desarrollado por: MSc. Ing. Mohammed Veramendy
-                </span>
-                <span className={`status-pill ${isOnline ? "online" : "offline"}`}>
-                  {isOnline ? "🟢 En línea (Supabase)" : "🔴 Modo Offline"}
-                </span>
-              </div>
             </div>
           </div>
 
-          {/* INTERRUPTOR MODO DE TRABAJO */}
-          <div className="mode-switch-wrapper">
-            <span className="mode-switch-label">Modo de Trabajo</span>
-            <div className="mode-switch-buttons" role="group" aria-label="Modo de Trabajo">
-              <button
-                type="button"
-                className={`mode-btn ${workMode === "mobile" ? "active-mobile" : ""}`}
-                onClick={() => setWorkMode("mobile")}
-              >
-                📱 Modo Celular (Campo)
-              </button>
-              <button
-                type="button"
-                className={`mode-btn ${workMode === "pc" ? "active-pc" : ""}`}
-                onClick={() => setWorkMode("pc")}
-              >
-                💻 Modo PC (Gabinete)
-              </button>
-            </div>
+          <div
+            className="conn-badge"
+            title={isOnline ? "Conectado a Supabase" : "Sin conexión a internet"}
+          >
+            <span className={`conn-dot ${isOnline ? "online" : "offline"}`} />
+            <span>{isOnline ? "En línea" : "Offline"}</span>
           </div>
         </div>
       </header>
 
+      {/* ================================================================= */}
+      {/* 2. PANEL LATERAL DESPLEGABLE (SIDEBAR DRAWER #0F172A)             */}
+      {/* ================================================================= */}
+      {drawerOpen && (
+        <>
+          <div
+            className="drawer-overlay"
+            onClick={() => setDrawerOpen(false)}
+            aria-hidden="true"
+          />
+          <aside className="sidebar-drawer" aria-label="Menú institucional y herramientas">
+            <div className="drawer-header">
+              <div>
+                <h2 className="drawer-title">Inventario Vial VEIDCON</h2>
+                <p className="drawer-subtitle">
+                  Sistema de Relevamiento Georreferenciado de Infraestructura
+                  Carretera • WGS84 UTM Zona 20S (EPSG:32720)
+                </p>
+                <span className="drawer-credit">
+                  Desarrollado por: MSc. Ing. Mohammed Veramendy
+                </span>
+              </div>
+              <button
+                type="button"
+                className="drawer-close-btn"
+                aria-label="Cerrar menú lateral"
+                onClick={() => setDrawerOpen(false)}
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="drawer-body">
+              {/* SINCRONIZACIÓN CON SUPABASE */}
+              <div>
+                <p className="drawer-section-title">Nube & Sincronización</p>
+                <button
+                  type="button"
+                  className="drawer-btn drawer-btn-sync"
+                  disabled={syncing || loadingRecords}
+                  onClick={handleSyncAndRefresh}
+                >
+                  {syncing || loadingRecords
+                    ? "⏳ Sincronizando con Supabase..."
+                    : pendingRecords.length > 0
+                    ? `🔄 Actualizar / Sincronizar (${pendingRecords.length} pend.)`
+                    : "🔄 Actualizar / Sincronizar con Supabase"}
+                </button>
+              </div>
+
+              {/* ACCESOS DIRECTOS DE EXPORTACIÓN PROFESIONAL */}
+              <div>
+                <p className="drawer-section-title">Exportación Profesional</p>
+                <div className="drawer-actions-col">
+                  <button
+                    type="button"
+                    className="drawer-btn"
+                    onClick={() => {
+                      handleExportExcel();
+                      setDrawerOpen(false);
+                    }}
+                  >
+                    📊 Exportar Excel (.xlsx)
+                  </button>
+                  <button
+                    type="button"
+                    className="drawer-btn"
+                    disabled={exportingPdf}
+                    onClick={async () => {
+                      await handleExportPDF();
+                      setDrawerOpen(false);
+                    }}
+                  >
+                    {exportingPdf
+                      ? "⏳ Generando Reporte PDF..."
+                      : "📄 Exportar Reporte PDF (con Fotos)"}
+                  </button>
+                  <button
+                    type="button"
+                    className="drawer-btn"
+                    onClick={() => {
+                      handleExportGeoJSON();
+                      setDrawerOpen(false);
+                    }}
+                  >
+                    🗺️ Exportar QGIS (.geojson)
+                  </button>
+                  <button
+                    type="button"
+                    className="drawer-btn"
+                    onClick={() => {
+                      handleExportCSV();
+                      setDrawerOpen(false);
+                    }}
+                  >
+                    📋 Exportar CSV (.csv)
+                  </button>
+                </div>
+              </div>
+
+              {/* RESUMEN ESTADÍSTICO RÁPIDO EN VIVO */}
+              <div>
+                <p className="drawer-section-title">Resumen Estadístico en Vivo</p>
+                <div className="drawer-stats-box">
+                  <div className="drawer-stat-total">
+                    <span>Total Registros Cargados</span>
+                    <span style={{ color: "#f59e0b" }}>{statsSummary.total}</span>
+                  </div>
+                  <div className="drawer-stat-grid">
+                    {ELEMENTOS.map((el) => (
+                      <React.Fragment key={el}>
+                        <span>{el}</span>
+                        <span className="drawer-stat-count">
+                          {statsSummary.byElement[el] || 0}
+                        </span>
+                      </React.Fragment>
+                    ))}
+                  </div>
+                  {pendingRecords.length > 0 && (
+                    <div
+                      style={{
+                        marginTop: 6,
+                        paddingTop: 6,
+                        borderTop: "1px solid rgba(255,255,255,0.15)",
+                        fontSize: "0.78rem",
+                        color: "#f59e0b",
+                        fontWeight: 800,
+                      }}
+                    >
+                      ⏳ Pendientes offline: {pendingRecords.length}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </aside>
+        </>
+      )}
+
       <main className="main-container">
-        {/* BANNER DE SINCRONIZACIÓN PENDIENTE CON SUPABASE */}
+        {/* BANNER DE SINCRONIZACIÓN PENDIENTE */}
         {pendingRecords.length > 0 && (
           <div className="sync-banner">
             <div>
               <strong>
-                ⚠️ Tienes {pendingRecords.length} registro(s) guardado(s)
-                localmente sin subir a la nube.
+                ⚠️ {pendingRecords.length} registro(s) pendiente(s) guardado(s)
+                localmente.
               </strong>
               <div style={{ fontSize: "0.82rem", marginTop: 2 }}>
-                Cuando dispongas de señal móvil o Wi-Fi, presiona sincronizar para
-                enviar fotos y datos a Supabase.
+                Presiona sincronizar al contar con señal móvil o Wi-Fi.
               </div>
             </div>
             <button
               type="button"
-              className="btn btn-primary"
+              className="btn btn-primary btn-sm"
               disabled={syncing || !isOnline}
-              onClick={handleSyncPending}
+              onClick={handleSyncAndRefresh}
             >
               {syncing
                 ? "⏳ Sincronizando..."
-                : `🔄 Sincronizar pendientes con la nube (${pendingRecords.length})`}
+                : `🔄 Sincronizar ahora (${pendingRecords.length})`}
             </button>
           </div>
         )}
 
         {/* ================================================================= */}
-        {/* 2. FORMULARIO DINÁMICO DE LOS 7 ELEMENTOS VIALES                  */}
+        {/* 3. FORMULARIO DINÁMICO (100% MODO CELULAR / CAMPO)                */}
         {/* ================================================================= */}
         <section className="card">
           <div className="card-header">
             <h2>📋 Nuevo Registro Vial</h2>
-            <span className="header-mode-tag">
-              {workMode === "mobile"
-                ? "📱 GPS UTM en vivo + Cámara trasera"
-                : "💻 Digitación manual UTM (Garmin) + Archivo PC"}
-            </span>
+            <span className="header-mode-tag">📱 Campo • UTM Z20S</span>
           </div>
 
           <form className="card-body" onSubmit={handleSubmit}>
-            {/* SELECTOR ELEMENTO VIAL Y GEOMETRÍA */}
             <div className="element-selector-bar">
               <div className="field-group">
                 <label className="field-label" htmlFor="select-elemento">
@@ -2699,9 +2995,7 @@ export default function App() {
             </div>
 
             <div className="form-grid">
-              {/* ----------------------------------------------------------- */}
-              {/* BLOQUES DE COORDENADAS UTM + MULTIFOTO POR UBICACIÓN        */}
-              {/* ----------------------------------------------------------- */}
+              {/* BLOQUES DE COORDENADAS UTM + MULTIFOTO POR UBICACIÓN */}
               <div className="locations-container">
                 {gpsStatus && (
                   <div className={`gps-banner ${gpsStatus.ok ? "ok" : "err"}`}>
@@ -2716,20 +3010,19 @@ export default function App() {
                       <span className="location-block-title">
                         📍 Ubicación del Punto (WGS84 UTM Zona 20S)
                       </span>
-                      {workMode === "mobile" && (
-                        <button
-                          type="button"
-                          className="btn btn-gps btn-sm"
-                          disabled={gpsLoadingTarget === "inicio"}
-                          onClick={() => handleCaptureGPS("inicio")}
-                        >
-                          {gpsLoadingTarget === "inicio"
-                            ? "⏳ Capturando GPS..."
-                            : "📍 Capturar GPS UTM Punto"}
-                        </button>
-                      )}
                     </div>
                     <div className="location-block-body">
+                      <button
+                        type="button"
+                        className="btn-gps-big"
+                        disabled={gpsLoadingTarget === "inicio"}
+                        onClick={() => handleCaptureGPS("inicio")}
+                      >
+                        {gpsLoadingTarget === "inicio"
+                          ? "⏳ Obteniendo satélites GPS..."
+                          : "📍 Capturar GPS UTM"}
+                      </button>
+
                       <div className="utm-pair">
                         <div className="field-group">
                           <label className="field-label">Este (m) *</label>
@@ -2783,12 +3076,7 @@ export default function App() {
                   </div>
                 ) : (
                   <>
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "flex-end",
-                      }}
-                    >
+                    <div style={{ display: "flex", justifyContent: "flex-end" }}>
                       <button
                         type="button"
                         className="btn btn-outline btn-sm"
@@ -2805,24 +3093,23 @@ export default function App() {
                           <span className="location-block-title">
                             🟢 PUNTO INICIAL (Inicio del Elemento)
                           </span>
-                          {workMode === "mobile" && (
-                            <button
-                              type="button"
-                              className="btn btn-gps btn-sm"
-                              disabled={gpsLoadingTarget === "inicio"}
-                              onClick={() => handleCaptureGPS("inicio")}
-                            >
-                              {gpsLoadingTarget === "inicio"
-                                ? "⏳ GPS..."
-                                : "📍 Capturar GPS UTM Inicio"}
-                            </button>
-                          )}
                         </div>
                         <div className="location-block-body">
+                          <button
+                            type="button"
+                            className="btn-gps-big"
+                            disabled={gpsLoadingTarget === "inicio"}
+                            onClick={() => handleCaptureGPS("inicio")}
+                          >
+                            {gpsLoadingTarget === "inicio"
+                              ? "⏳ Obteniendo GPS Inicio..."
+                              : "📍 Capturar GPS UTM"}
+                          </button>
+
                           <div className="utm-pair">
                             <div className="field-group">
                               <label className="field-label">
-                                Coordenada Este Inicio (m) *
+                                Este Inicio (m) *
                               </label>
                               <input
                                 type="number"
@@ -2838,7 +3125,7 @@ export default function App() {
                             </div>
                             <div className="field-group">
                               <label className="field-label">
-                                Coordenada Norte Inicio (m) *
+                                Norte Inicio (m) *
                               </label>
                               <input
                                 type="number"
@@ -2877,25 +3164,22 @@ export default function App() {
                           <span className="location-block-title">
                             🏁 PUNTO FINAL (Fin del Elemento)
                           </span>
-                          {workMode === "mobile" && (
-                            <button
-                              type="button"
-                              className="btn btn-gps btn-sm"
-                              disabled={gpsLoadingTarget === "fin"}
-                              onClick={() => handleCaptureGPS("fin")}
-                            >
-                              {gpsLoadingTarget === "fin"
-                                ? "⏳ GPS..."
-                                : "📍 Capturar GPS UTM Fin"}
-                            </button>
-                          )}
                         </div>
                         <div className="location-block-body">
+                          <button
+                            type="button"
+                            className="btn-gps-big"
+                            disabled={gpsLoadingTarget === "fin"}
+                            onClick={() => handleCaptureGPS("fin")}
+                          >
+                            {gpsLoadingTarget === "fin"
+                              ? "⏳ Obteniendo GPS Fin..."
+                              : "📍 Capturar GPS UTM"}
+                          </button>
+
                           <div className="utm-pair">
                             <div className="field-group">
-                              <label className="field-label">
-                                Coordenada Este Fin (m) *
-                              </label>
+                              <label className="field-label">Este Fin (m) *</label>
                               <input
                                 type="number"
                                 step="0.01"
@@ -2909,9 +3193,7 @@ export default function App() {
                               />
                             </div>
                             <div className="field-group">
-                              <label className="field-label">
-                                Coordenada Norte Fin (m) *
-                              </label>
+                              <label className="field-label">Norte Fin (m) *</label>
                               <input
                                 type="number"
                                 step="0.01"
@@ -2947,9 +3229,7 @@ export default function App() {
                 )}
               </div>
 
-              {/* ----------------------------------------------------------- */}
-              {/* CAMPOS TÉCNICOS DINÁMICOS                                   */}
-              {/* ----------------------------------------------------------- */}
+              {/* CAMPOS TÉCNICOS DINÁMICOS */}
               {formData.elemento === "Puente" && (
                 <div className="field-group">
                   <label className="field-label">Nombre del Puente</label>
@@ -3152,7 +3432,7 @@ export default function App() {
         </section>
 
         {/* ================================================================= */}
-        {/* 3. TABLA EN VIVO + BARRA DE EXPORTACIÓN PROFESIONAL               */}
+        {/* 4. TABLA EN VIVO + BARRA DE EXPORTACIÓN PROFESIONAL               */}
         {/* ================================================================= */}
         <section className="card">
           <div className="card-header">
@@ -3162,14 +3442,13 @@ export default function App() {
             <button
               type="button"
               className="btn btn-amber btn-sm"
-              onClick={fetchCloudRecords}
-              disabled={loadingRecords}
+              onClick={handleSyncAndRefresh}
+              disabled={loadingRecords || syncing}
             >
-              {loadingRecords ? "⏳ Actualizando..." : "🔄 Recargar Supabase"}
+              {loadingRecords || syncing ? "⏳ Actualizando..." : "🔄 Sincronizar"}
             </button>
           </div>
 
-          {/* BARRA DE EXPORTACIÓN PROFESIONAL (4 BOTONES) */}
           <div className="export-bar">
             <button
               type="button"
@@ -3204,7 +3483,6 @@ export default function App() {
             </button>
           </div>
 
-          {/* FILTROS */}
           <div className="records-toolbar">
             <div className="filters-row">
               <select
@@ -3247,7 +3525,6 @@ export default function App() {
             </span>
           </div>
 
-          {/* TABLA DETALLADA */}
           {filteredRecords.length === 0 ? (
             <div className="empty-state">
               <p style={{ fontWeight: 800, fontSize: "1rem", margin: "0 0 6px" }}>
@@ -3458,7 +3735,7 @@ export default function App() {
         WGS84 UTM Zona 20S (EPSG:32720) © {new Date().getFullYear()}
       </footer>
 
-      {/* MODAL DE VISTA AMPLIADA DE FOTOGRAFÍA */}
+      {/* MODAL VISTA AMPLIADA DE FOTOGRAFÍA */}
       {photoModal && (
         <div className="modal-backdrop" onClick={() => setPhotoModal(null)}>
           <div className="modal-card" onClick={(e) => e.stopPropagation()}>
